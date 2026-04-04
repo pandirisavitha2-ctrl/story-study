@@ -1,0 +1,21 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Outfit", ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  body {
+    @apply bg-indigo-50/30 text-gray-900 antialiased;
+  }
+}
+
+.glass {
+  @apply bg-white/80 backdrop-blur-xl border border-white/20;
+}
+
+.bento-card {
+  @apply bg-white p-6 rounded-[2rem] shadow-xl border-4 border-transparent hover:border-indigo-100 transition-all;
+}
+
