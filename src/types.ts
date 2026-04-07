@@ -21,4 +21,5 @@ export interface UserProfile {
   strengths: string[];
   weaknesses: string[];
   upcomingExams: { subject: string; date: string }[];
+  learningStyle?: 'Visual' | 'Auditory' | 'Reading' | 'Kinesthetic';
 }

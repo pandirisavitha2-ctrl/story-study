@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { User, Target, Brain, Calendar, Save, Sparkles, MessageSquare } from 'lucide-react';
 import { motion } from 'motion/react';
 import { UserProfile } from '../types';
+import { cn } from '../lib/utils';
 
 interface ProfileProps {
   onNavigate?: (view: string) => void;
@@ -58,6 +59,28 @@ export default function Profile({ onNavigate }: ProfileProps) {
       </header>
 
       <div className="bg-black/40 backdrop-blur-3xl p-8 rounded-[2.5rem] shadow-2xl border border-white/10 space-y-6">
+        <div className="space-y-4">
+          <label className="text-xs font-black text-indigo-400 uppercase tracking-widest ml-2 flex items-center gap-1">
+            <Sparkles className="w-3 h-3" /> Learning Style
+          </label>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {['Visual', 'Auditory', 'Reading', 'Kinesthetic'].map((style) => (
+              <button
+                key={style}
+                onClick={() => setProfile({ ...profile, learningStyle: style as any })}
+                className={cn(
+                  "px-4 py-3 rounded-xl font-bold text-sm transition-all border-2",
+                  profile.learningStyle === style 
+                    ? "bg-indigo-600 border-indigo-500 text-white shadow-lg shadow-indigo-500/20" 
+                    : "bg-white/5 border-white/10 text-white/40 hover:bg-white/10"
+                )}
+              >
+                {style}
+              </button>
+            ))}
+          </div>
+        </div>
+
         <div className="space-y-2">
           <label className="text-xs font-black text-white/40 uppercase tracking-widest ml-2">Your Name</label>
           <input

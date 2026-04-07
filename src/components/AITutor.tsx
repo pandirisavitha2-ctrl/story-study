@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Upload, BookOpen, Sparkles, Loader2, History, Trash2, Pause, Volume2, Send, User, Bot, ThumbsUp, ThumbsDown } from 'lucide-react';
+import { Upload, BookOpen, Sparkles, Loader2, History, Trash2, Pause, Volume2, Send, User, Bot, ThumbsUp, ThumbsDown, MessageSquare, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import ReactMarkdown from 'react-markdown';
 import { GoogleGenAI } from "@google/genai";
@@ -459,63 +459,78 @@ export default function AITutor() {
                   </div>
                 </div>
 
-                <div className="border-t border-white/10 pt-8 mt-8">
-                  <h4 className="text-lg font-bold mb-4 flex items-center gap-2">
-                    <Bot className="w-5 h-5 text-indigo-400" />
-                    Follow-up Chat
-                  </h4>
+                <div className="border-t border-white/10 pt-12 mt-12">
+                  <div className="flex items-center justify-between mb-8">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 rounded-xl bg-indigo-500/20 border border-indigo-500/30">
+                        <Bot className="w-5 h-5 text-indigo-400" />
+                      </div>
+                      <div>
+                        <h4 className="text-xl font-black text-white uppercase tracking-wider">Interactive Follow-up</h4>
+                        <p className="text-[10px] text-white/40 font-bold uppercase tracking-widest">Ask anything about the story</p>
+                      </div>
+                    </div>
+                  </div>
                   
-                  <div className="space-y-4 mb-6 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                  <div className="space-y-6 mb-8 max-h-[500px] overflow-y-auto pr-4 custom-scrollbar">
+                    {chatMessages.length === 0 && (
+                      <div className="text-center py-12 bg-white/5 rounded-[2rem] border border-dashed border-white/10">
+                        <MessageSquare className="w-12 h-12 text-white/10 mx-auto mb-4" />
+                        <p className="text-white/40 font-bold">No follow-up questions yet. Try asking "Explain the first part again".</p>
+                      </div>
+                    )}
                     {chatMessages.map((msg, idx) => (
-                      <div
+                      <motion.div
                         key={idx}
+                        initial={{ opacity: 0, x: msg.role === 'user' ? 20 : -20 }}
+                        animate={{ opacity: 1, x: 0 }}
                         className={cn(
-                          "flex gap-3 max-w-[85%]",
+                          "flex gap-4 max-w-[90%]",
                           msg.role === 'user' ? "ml-auto flex-row-reverse" : "mr-auto"
                         )}
                       >
                         <div className={cn(
-                          "w-8 h-8 rounded-full flex items-center justify-center shrink-0",
-                          msg.role === 'user' ? "bg-indigo-600" : "bg-white/10"
+                          "w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 shadow-lg",
+                          msg.role === 'user' ? "bg-indigo-600 text-white" : "bg-slate-800 text-indigo-400 border border-white/10"
                         )}>
-                          {msg.role === 'user' ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
+                          {msg.role === 'user' ? <User className="w-5 h-5" /> : <Bot className="w-5 h-5" />}
                         </div>
                         <div className={cn(
-                          "p-4 rounded-2xl text-sm leading-relaxed",
-                          msg.role === 'user' ? "bg-indigo-600 text-white rounded-tr-none" : "bg-white/5 text-white/90 border border-white/10 rounded-tl-none"
+                          "p-5 rounded-[1.5rem] text-sm leading-relaxed shadow-xl",
+                          msg.role === 'user' ? "bg-indigo-600 text-white rounded-tr-none" : "bg-white/5 text-white/90 border border-white/10 rounded-tl-none backdrop-blur-xl"
                         )}>
                           <ReactMarkdown>{msg.text}</ReactMarkdown>
                         </div>
-                      </div>
+                      </motion.div>
                     ))}
                     {chatLoading && (
-                      <div className="flex gap-3 mr-auto">
-                        <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center shrink-0">
-                          <Bot className="w-4 h-4" />
+                      <div className="flex gap-4 mr-auto">
+                        <div className="w-10 h-10 rounded-2xl bg-slate-800 text-indigo-400 border border-white/10 flex items-center justify-center shrink-0 shadow-lg">
+                          <Bot className="w-5 h-5" />
                         </div>
-                        <div className="bg-white/5 p-4 rounded-2xl rounded-tl-none border border-white/10">
-                          <Loader2 className="w-4 h-4 animate-spin text-indigo-400" />
+                        <div className="bg-white/5 p-5 rounded-[1.5rem] rounded-tl-none border border-white/10 backdrop-blur-xl">
+                          <Loader2 className="w-5 h-5 animate-spin text-indigo-400" />
                         </div>
                       </div>
                     )}
                     <div ref={chatEndRef} />
                   </div>
-
-                  <div className="relative">
+                  
+                  <div className="relative group">
                     <input
                       type="text"
                       value={chatInput}
                       onChange={(e) => setChatInput(e.target.value)}
                       onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
                       placeholder="Ask a follow-up question..."
-                      className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 pr-14 outline-none focus:border-indigo-500 transition-all text-white"
+                      className="w-full bg-white/5 border-2 border-white/10 rounded-3xl px-8 py-5 pr-16 outline-none focus:border-indigo-500 transition-all text-white placeholder:text-white/20 font-bold"
                     />
                     <button
                       onClick={handleSendMessage}
                       disabled={chatLoading || !chatInput.trim()}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 p-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-all disabled:opacity-50"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 p-3 bg-indigo-600 text-white rounded-2xl shadow-lg hover:bg-indigo-700 transition-all disabled:opacity-50"
                     >
-                      <Send className="w-5 h-5" />
+                      <ArrowRight className="w-6 h-6" />
                     </button>
                   </div>
                 </div>

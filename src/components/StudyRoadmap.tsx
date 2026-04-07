@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import ReactMarkdown from 'react-markdown';
 import { generateStudyRoadmap } from '../services/gemini';
 import { cn } from '../lib/utils';
-import RoadmapFlow from './RoadmapFlow';
+import FlowChart from './FlowChart';
 
 type Step = 'setup' | 'upload' | 'generating' | 'result';
 
@@ -312,12 +312,22 @@ export default function StudyRoadmap() {
               </div>
 
               {roadmapData && (
-                <div className="space-y-4">
-                  <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                    <Sparkles className="text-rose-500 w-5 h-5" />
-                    Visual Roadmap Flow
-                  </h3>
-                  <RoadmapFlow data={roadmapData} />
+                <div className="space-y-6">
+                  <div className="flex items-center gap-3 px-4">
+                    <div className="p-2 rounded-xl bg-rose-500/20 border border-rose-500/30">
+                      <Sparkles className="text-rose-400 w-5 h-5" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-black text-white uppercase tracking-wider">Visual Strategy Map</h3>
+                      <p className="text-[10px] text-white/40 font-bold uppercase tracking-widest">AI-Optimized Learning Path</p>
+                    </div>
+                  </div>
+                  <FlowChart 
+                    data={roadmapData.map((d: any) => ({
+                      step: d.day,
+                      desc: `${d.topic}: ${d.objective}`
+                    }))} 
+                  />
                 </div>
               )}
 

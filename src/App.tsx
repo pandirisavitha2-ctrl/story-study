@@ -19,6 +19,16 @@ export default function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [userName, setUserName] = useState('Student');
 
+  const [showWelcome, setShowWelcome] = useState(false);
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      setShowWelcome(true);
+      const timer = setTimeout(() => setShowWelcome(false), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [isLoggedIn]);
+
   useEffect(() => {
     const savedProfile = localStorage.getItem('user_profile');
     if (savedProfile) {
@@ -69,6 +79,29 @@ export default function App() {
         <Login onLogin={() => setIsLoggedIn(true)} />
       ) : (
         <>
+          {/* Welcome Toast */}
+          <AnimatePresence>
+            {showWelcome && (
+              <motion.div
+                initial={{ opacity: 0, y: 100, x: '-50%' }}
+                animate={{ opacity: 1, y: 0, x: '-50%' }}
+                exit={{ opacity: 0, y: 100, x: '-50%' }}
+                className="fixed bottom-24 lg:bottom-12 left-1/2 z-[100] bg-indigo-600 text-white px-8 py-4 rounded-2xl shadow-2xl flex items-center gap-4 border border-white/20 backdrop-blur-xl"
+              >
+                <div className="p-2 bg-white/20 rounded-xl">
+                  <Sparkles className="w-6 h-6 text-amber-400 animate-pulse" />
+                </div>
+                <div>
+                  <h4 className="font-black text-lg">Welcome back, {userName}!</h4>
+                  <p className="text-sm text-white/70">Your magical study session is ready.</p>
+                </div>
+                <button onClick={() => setShowWelcome(false)} className="ml-4 text-white/40 hover:text-white">
+                  <X className="w-5 h-5" />
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           {/* Desktop Sidebar */}
           <aside className="hidden lg:flex flex-col w-72 h-screen fixed left-0 top-0 bg-black/40 backdrop-blur-3xl border-r border-white/10 p-8 z-50 text-white">
             <div className="flex items-center gap-3 mb-12">

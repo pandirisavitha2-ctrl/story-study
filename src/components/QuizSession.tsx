@@ -372,15 +372,36 @@ export default function QuizSession() {
               className="flex-1 flex flex-col items-center justify-center space-y-8 text-center"
             >
               <div className="relative">
+                {/* Simulated Confetti */}
+                {Math.round((answers.reduce((acc, a, i) => acc + (questions[i].correctAnswer === a ? 1 : 0), 0) / questions.length) * 100) >= 80 && (
+                  <div className="absolute inset-0 pointer-events-none overflow-visible">
+                    {[...Array(20)].map((_, i) => (
+                      <motion.div
+                        key={i}
+                        initial={{ opacity: 1, y: 0, x: 0, scale: 1 }}
+                        animate={{ 
+                          opacity: 0, 
+                          y: (Math.random() - 0.5) * 400, 
+                          x: (Math.random() - 0.5) * 400,
+                          rotate: Math.random() * 360,
+                          scale: 0
+                        }}
+                        transition={{ duration: 2, ease: "easeOut" }}
+                        className="absolute top-1/2 left-1/2 w-3 h-3 rounded-sm"
+                        style={{ backgroundColor: ['#6366f1', '#f43f5e', '#fbbf24', '#10b981'][i % 4] }}
+                      />
+                    ))}
+                  </div>
+                )}
                 <div className={cn(
-                  "w-48 h-48 rounded-full flex items-center justify-center shadow-2xl",
+                  "w-48 h-48 rounded-full flex items-center justify-center shadow-2xl relative z-10",
                   (answers.reduce((acc, a, i) => acc + (questions[i].correctAnswer === a ? 1 : 0), 0) / questions.length) >= 0.8 
                     ? "bg-emerald-100 text-emerald-600" 
                     : "bg-rose-100 text-rose-600"
                 )}>
                   <Trophy className="w-24 h-24" />
                 </div>
-                <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 bg-black/60 backdrop-blur-xl px-6 py-2 rounded-full shadow-lg border border-white/20 font-black text-2xl text-white">
+                <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 bg-black/60 backdrop-blur-xl px-6 py-2 rounded-full shadow-lg border border-white/20 font-black text-2xl text-white z-20">
                   {Math.round((answers.reduce((acc, a, i) => acc + (questions[i].correctAnswer === a ? 1 : 0), 0) / questions.length) * 100)}%
                 </div>
               </div>

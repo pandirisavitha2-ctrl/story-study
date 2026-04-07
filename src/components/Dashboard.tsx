@@ -91,13 +91,45 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
     <div className="space-y-8">
       <header className="flex items-center justify-between">
         <div>
-          <h1 className="text-4xl font-black text-white tracking-tight">
-            Hello, <span className="text-indigo-400">{userName}!</span> 👋
+          <h1 className="text-5xl font-black text-white tracking-tighter">
+            Welcome back, <span className="text-indigo-400">{userName}!</span> 👋
           </h1>
-          <p className="text-white/60 mt-1">Ready to ace your exams today?</p>
+          <p className="text-white/60 mt-2 text-lg font-medium">Your academic journey continues. What's the goal for today?</p>
         </div>
-        <div className="h-12 w-12 rounded-full bg-gradient-to-tr from-indigo-500 to-violet-600 border-4 border-white/20 shadow-lg" />
+        <div className="hidden sm:block h-16 w-16 rounded-full bg-gradient-to-tr from-indigo-500 to-violet-600 border-4 border-white/20 shadow-2xl animate-pulse" />
       </header>
+
+      {/* Quick Start Guide */}
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="p-8 rounded-[3rem] bg-gradient-to-br from-indigo-600/20 to-violet-600/20 border border-white/10 backdrop-blur-3xl relative overflow-hidden"
+      >
+        <div className="absolute top-0 right-0 p-8 opacity-10">
+          <Sparkles className="w-40 h-40 text-white" />
+        </div>
+        <div className="relative z-10 space-y-6">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-indigo-500 rounded-xl">
+              <BrainCircuit className="w-6 h-6 text-white" />
+            </div>
+            <h2 className="text-2xl font-black text-white uppercase tracking-wider">Quick Start Guide</h2>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            {[
+              { step: '01', title: 'Upload Content', desc: 'Drop your PDFs or images in the AI Tutor.' },
+              { step: '02', title: 'Get Stories', desc: 'AI transforms boring facts into epic tales.' },
+              { step: '03', title: 'Ace Exams', desc: 'Take the Quiz Challenge and win.' }
+            ].map((s, i) => (
+              <div key={i} className="space-y-2">
+                <div className="text-3xl font-black text-indigo-400/30">{s.step}</div>
+                <h4 className="font-bold text-white">{s.title}</h4>
+                <p className="text-sm text-white/50 leading-relaxed">{s.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </motion.div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {stats.map((stat, i) => (
