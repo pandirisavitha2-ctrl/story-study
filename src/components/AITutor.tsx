@@ -5,6 +5,9 @@ import ReactMarkdown from 'react-markdown';
 import { GoogleGenAI } from "@google/genai";
 import { generateStoryTutorResponse } from '../services/gemini';
 import { cn } from '../lib/utils';
+import MindMap from './MindMap';
+import Infographic from './Infographic';
+import FlowChart from './FlowChart';
 
 interface ChatMessage {
   role: 'user' | 'model';
@@ -17,6 +20,9 @@ interface StoryHistory {
   content: string;
   date: string;
   chatHistory?: ChatMessage[];
+  mindMapData?: any;
+  infographicData?: any;
+  flowChartData?: any;
 }
 
 export default function AITutor() {
@@ -33,6 +39,9 @@ export default function AITutor() {
   const [chatInput, setChatInput] = useState('');
   const [chatLoading, setChatLoading] = useState(false);
   const [contentFeedback, setContentFeedback] = useState<'up' | 'down' | null>(null);
+  const [mindMapData, setMindMapData] = useState<any>(null);
+  const [infographicData, setInfographicData] = useState<any>(null);
+  const [flowChartData, setFlowChartData] = useState<any>(null);
   const speechRef = useRef<SpeechSynthesisUtterance | null>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
@@ -125,10 +134,47 @@ export default function AITutor() {
     setIsSpeaking(false);
 
     try {
-      const res = await generateStoryTutorResponse(preview, file.type, undefined, language);
-      setResponse(res);
-      setChatMessages([{ role: 'model', text: res }]);
-      saveToHistory(file.name, res);
+      const res = await generateStoryTutorResponse(preview, file.type, undefined, language, (text) => {
+        const cleanStreamingText = text
+          .replace(/```mindmap-json\s*[\s\S]*?\s*```/g, '')
+          .replace(/```infographic-json\s*[\s\S]*?\s*```/g, '')
+          .replace(/```flowchart-json\s*[\s\S]*?\s*```/g, '')
+          .replace(/```mindmap-json\s*[\s\S]*/g, '')
+          .replace(/```infographic-json\s*[\s\S]*/g, '')
+          .replace(/```flowchart-json\s*[\s\S]*/g, '')
+          .trim();
+        setResponse(cleanStreamingText);
+      });
+      
+      // Extract Visual Data
+      const mindMapMatch = res.match(/```mindmap-json\s*([\s\S]*?)\s*```/);
+      const infographicMatch = res.match(/```infographic-json\s*([\s\S]*?)\s*```/);
+      const flowChartMatch = res.match(/```flowchart-json\s*([\s\S]*?)\s*```/);
+
+      let mindMap = null;
+      let infographic = null;
+      let flowChart = null;
+
+      if (mindMapMatch) {
+        try { mindMap = JSON.parse(mindMapMatch[1]); setMindMapData(mindMap); } catch (e) { console.error(e); }
+      }
+      if (infographicMatch) {
+        try { infographic = JSON.parse(infographicMatch[1]); setInfographicData(infographic); } catch (e) { console.error(e); }
+      }
+      if (flowChartMatch) {
+        try { flowChart = JSON.parse(flowChartMatch[1]); setFlowChartData(flowChart); } catch (e) { console.error(e); }
+      }
+
+      // Clean response for display
+      const cleanRes = res
+        .replace(/```mindmap-json\s*[\s\S]*?\s*```/g, '')
+        .replace(/```infographic-json\s*[\s\S]*?\s*```/g, '')
+        .replace(/```flowchart-json\s*[\s\S]*?\s*```/g, '')
+        .trim();
+      
+      setResponse(cleanRes);
+      setChatMessages([{ role: 'model', text: cleanRes }]);
+      saveToHistory(file.name, cleanRes, undefined, mindMap, infographic, flowChart);
     } catch (error: any) {
       console.error(error);
       alert('Error generating content. Please try again.');
@@ -137,13 +183,16 @@ export default function AITutor() {
     }
   };
 
-  const saveToHistory = (title: string, content: string, chatHistory?: ChatMessage[]) => {
+  const saveToHistory = (title: string, content: string, chatHistory?: ChatMessage[], mindMap?: any, infographic?: any, flowChart?: any) => {
     const newStory: StoryHistory = {
       id: Math.random().toString(36).substr(2, 9),
       title,
       content,
       date: new Date().toLocaleString(),
-      chatHistory: chatHistory || [{ role: 'model', text: content }]
+      chatHistory: chatHistory || [{ role: 'model', text: content }],
+      mindMapData: mindMap,
+      infographicData: infographic,
+      flowChartData: flowChart
     };
     setHistory([newStory, ...history]);
   };
@@ -211,6 +260,9 @@ export default function AITutor() {
   const loadFromHistory = (item: StoryHistory) => {
     setResponse(item.content);
     setChatMessages(item.chatHistory || [{ role: 'model', text: item.content }]);
+    setMindMapData(item.mindMapData || null);
+    setInfographicData(item.infographicData || null);
+    setFlowChartData(item.flowChartData || null);
     window.speechSynthesis.cancel();
     setIsSpeaking(false);
   };
@@ -364,6 +416,24 @@ export default function AITutor() {
                 <div className="prose prose-invert prose-indigo max-w-none mb-6">
                   <ReactMarkdown>{response}</ReactMarkdown>
                 </div>
+
+                {mindMapData && (
+                  <div className="mb-8">
+                    <MindMap data={mindMapData} />
+                  </div>
+                )}
+
+                {infographicData && (
+                  <div className="mb-8">
+                    <Infographic data={infographicData} />
+                  </div>
+                )}
+
+                {flowChartData && (
+                  <div className="mb-8">
+                    <FlowChart data={flowChartData} />
+                  </div>
+                )}
 
                 <div className="flex items-center gap-4 mb-8 p-4 bg-white/5 rounded-2xl border border-white/10">
                   <span className="text-sm font-bold text-white/40 uppercase tracking-widest">Was this helpful?</span>

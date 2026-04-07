@@ -1,6 +1,6 @@
 import { GoogleGenAI, Modality } from "@google/genai";
 
-export async function generateStoryTutorResponse(fileData?: string, mimeType?: string, textContent?: string, language: string = 'English') {
+export async function generateStoryTutorResponse(fileData?: string, mimeType?: string, textContent?: string, language: string = 'English', onStream?: (text: string) => void) {
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || process.env.GEMINI_API_KEY || "" });
   const model = "gemini-3-flash-preview";
   
@@ -15,8 +15,12 @@ export async function generateStoryTutorResponse(fileData?: string, mimeType?: s
     3. **Main Points**: 3-5 bullet points summarizing the key takeaways.
     4. **Key Terms**: Definitions of 3-5 important terms from the content.
     5. **Practice Problems**: 2 simple practice problems to test understanding.
+    6. **Visual Data**: Provide the following JSON structures wrapped in their respective code blocks:
+       - **Mind Map**: labeled "mindmap-json". Format: { "name": "Root", "children": [...] }
+       - **Infographic**: labeled "infographic-json". Format: [ { "label": "Topic A", "value": 40 }, ... ] (Values should sum to 100 or represent importance/weight)
+       - **Flowchart**: labeled "flowchart-json". Format: [ { "step": "Step 1", "desc": "Description" }, ... ] (Represents a process or logical flow from the material)
     
-    IMPORTANT: Your entire response MUST be in ${language}.
+    IMPORTANT: Your entire response (except the JSON blocks) MUST be in ${language}.
     Be vibrant, encouraging, and creative!
   `;
 
@@ -35,6 +39,22 @@ export async function generateStoryTutorResponse(fileData?: string, mimeType?: s
     parts.push({ text: "Please explain the concepts in this image as a story." });
   }
 
+  if (onStream) {
+    const result = await ai.models.generateContentStream({
+      model,
+      contents: { parts },
+      config: { systemInstruction },
+    });
+
+    let fullText = "";
+    for await (const chunk of result) {
+      const chunkText = chunk.text;
+      fullText += chunkText;
+      onStream(fullText);
+    }
+    return fullText;
+  }
+
   const response = await ai.models.generateContent({
     model,
     contents: { parts },
@@ -47,7 +67,8 @@ export async function generateStoryTutorResponse(fileData?: string, mimeType?: s
 export async function generateStudyRoadmap(
   subjects: number,
   examDate: string,
-  pdfData: { data: string; mimeType: string }[]
+  pdfData: { data: string; mimeType: string }[],
+  onStream?: (text: string) => void
 ) {
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || process.env.GEMINI_API_KEY || "" });
   const model = "gemini-3-flash-preview";
@@ -70,6 +91,9 @@ export async function generateStudyRoadmap(
     - Deliver the plan in a Markdown Table.
     - Use clear headers for each day.
     - Ensure the language is direct and actionable.
+    - ALSO provide the roadmap data in a JSON array format at the very end.
+      Format: [ { "day": "Day 1", "topic": "Topic Name", "objective": "Goal" }, ... ]
+      Wrap this JSON in a code block labeled "roadmap-json".
   `;
 
   const parts: any[] = pdfData.map(pdf => ({
@@ -80,6 +104,22 @@ export async function generateStudyRoadmap(
   }));
 
   parts.push({ text: `Generate a study roadmap for ${subjects} subjects with an exam date of ${examDate}. Today's date is ${new Date().toLocaleDateString()}.` });
+
+  if (onStream) {
+    const result = await ai.models.generateContentStream({
+      model,
+      contents: { parts },
+      config: { systemInstruction },
+    });
+
+    let fullText = "";
+    for await (const chunk of result) {
+      const chunkText = chunk.text;
+      fullText += chunkText;
+      onStream(fullText);
+    }
+    return fullText;
+  }
 
   const response = await ai.models.generateContent({
     model,

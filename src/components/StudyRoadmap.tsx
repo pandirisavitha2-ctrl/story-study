@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import ReactMarkdown from 'react-markdown';
 import { generateStudyRoadmap } from '../services/gemini';
 import { cn } from '../lib/utils';
+import RoadmapFlow from './RoadmapFlow';
 
 type Step = 'setup' | 'upload' | 'generating' | 'result';
 
@@ -20,6 +21,7 @@ export default function StudyRoadmap() {
   const [files, setFiles] = useState<FilePreview[]>([]);
   const [loading, setLoading] = useState(false);
   const [roadmap, setRoadmap] = useState<string | null>(null);
+  const [roadmapData, setRoadmapData] = useState<any[] | null>(null);
   const [history, setHistory] = useState<any[]>([]);
   const [showHistory, setShowHistory] = useState(false);
   const [dragging, setDragging] = useState(false);
@@ -61,8 +63,30 @@ export default function StudyRoadmap() {
     setStep('generating');
     setLoading(true);
     try {
-      const result = await generateStudyRoadmap(subjects, examDate, files);
-      setRoadmap(result);
+      const result = await generateStudyRoadmap(subjects, examDate, files, (text) => {
+        const cleanStreamingText = text
+          .replace(/```roadmap-json\s*[\s\S]*?\s*```/g, '')
+          .replace(/```roadmap-json\s*[\s\S]*/g, '')
+          .trim();
+        setRoadmap(cleanStreamingText);
+        if (step !== 'result') setStep('result');
+      });
+      
+      // Extract JSON data
+      const jsonMatch = result.match(/```roadmap-json\s*([\s\S]*?)\s*```/);
+      let jsonData = null;
+      if (jsonMatch) {
+        try {
+          jsonData = JSON.parse(jsonMatch[1]);
+          setRoadmapData(jsonData);
+        } catch (e) {
+          console.error("Failed to parse roadmap JSON", e);
+        }
+      }
+
+      // Clean markdown
+      const cleanRoadmap = result.replace(/```roadmap-json\s*[\s\S]*?\s*```/g, '').trim();
+      setRoadmap(cleanRoadmap);
       
       // Save to history
       const savedRoadmaps = JSON.parse(localStorage.getItem('study_roadmaps') || '[]');
@@ -70,7 +94,8 @@ export default function StudyRoadmap() {
         id: Math.random().toString(36).substr(2, 9),
         subjects,
         examDate,
-        content: result,
+        content: cleanRoadmap,
+        jsonData: jsonData,
         date: new Date().toLocaleString()
       };
       localStorage.setItem('study_roadmaps', JSON.stringify([newRoadmap, ...savedRoadmaps]));
@@ -125,6 +150,7 @@ export default function StudyRoadmap() {
                     key={item.id}
                     onClick={() => {
                       setRoadmap(item.content);
+                      setRoadmapData(item.jsonData || null);
                       setStep('result');
                       setShowHistory(false);
                     }}
@@ -284,6 +310,17 @@ export default function StudyRoadmap() {
                   Create New
                 </button>
               </div>
+
+              {roadmapData && (
+                <div className="space-y-4">
+                  <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                    <Sparkles className="text-rose-500 w-5 h-5" />
+                    Visual Roadmap Flow
+                  </h3>
+                  <RoadmapFlow data={roadmapData} />
+                </div>
+              )}
+
               <div className="prose prose-invert prose-rose max-w-none prose-headings:font-black prose-table:border prose-table:border-white/10 prose-th:bg-white/5 prose-th:p-4 prose-td:p-4">
                 <ReactMarkdown>{roadmap}</ReactMarkdown>
               </div>
