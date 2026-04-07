@@ -99,18 +99,22 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
         <div className="h-12 w-12 rounded-full bg-gradient-to-tr from-indigo-500 to-violet-600 border-4 border-white/20 shadow-lg" />
       </header>
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {stats.map((stat, i) => (
           <motion.div
             key={i}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.1 }}
-            className="p-6 rounded-3xl bg-black/40 backdrop-blur-2xl border border-white/10 shadow-2xl"
+            className="p-6 rounded-3xl bg-black/40 backdrop-blur-2xl border border-white/10 shadow-2xl flex sm:flex-col items-center sm:items-start gap-4 sm:gap-0"
           >
-            <stat.icon className={cn("w-8 h-8 mb-4", stat.color)} />
-            <div className="text-3xl font-black text-white">{stat.value}</div>
-            <div className="text-xs font-bold text-white/40 uppercase tracking-widest mt-1">{stat.label}</div>
+            <div className={cn("p-3 rounded-2xl bg-white/5", stat.color.replace('text-', 'bg-').replace('-400', '-400/10'))}>
+              <stat.icon className={cn("w-6 h-6", stat.color)} />
+            </div>
+            <div className="flex-1 sm:mt-4">
+              <div className="text-3xl font-black text-white">{stat.value}</div>
+              <div className="text-xs font-bold text-white/40 uppercase tracking-widest mt-1">{stat.label}</div>
+            </div>
           </motion.div>
         ))}
       </div>

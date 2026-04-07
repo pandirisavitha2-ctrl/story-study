@@ -261,13 +261,13 @@ export default function AITutor() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
-          <div className="bg-black/40 backdrop-blur-2xl p-6 rounded-3xl shadow-2xl border border-white/10 text-white">
+          <div className="bg-black/40 backdrop-blur-2xl p-4 sm:p-6 rounded-3xl shadow-2xl border border-white/10 text-white">
             <div 
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
               onDrop={handleDrop}
               className={cn(
-                "flex flex-col items-center justify-center border-2 border-dashed rounded-2xl p-8 transition-all cursor-pointer relative min-h-[200px]",
+                "flex flex-col items-center justify-center border-2 border-dashed rounded-2xl p-4 sm:p-8 transition-all cursor-pointer relative min-h-[200px]",
                 dragging ? "border-white/40 bg-white/10" : "border-white/20 bg-white/5 hover:bg-white/10"
               )}
             >
@@ -342,9 +342,9 @@ export default function AITutor() {
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="bg-black/40 backdrop-blur-3xl p-8 rounded-3xl shadow-2xl border border-white/10 relative overflow-hidden text-white"
+                className="bg-black/40 backdrop-blur-3xl p-4 sm:p-8 rounded-3xl shadow-2xl border border-white/10 relative overflow-hidden text-white"
               >
-                <div className="flex items-center justify-between mb-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                   <h3 className="text-xl font-bold text-indigo-600 flex items-center gap-2">
                     <Sparkles className="w-6 h-6 text-amber-400" />
                     AI Explanation
@@ -352,7 +352,7 @@ export default function AITutor() {
                   <button
                     onClick={handleSpeak}
                     className={cn(
-                      "flex items-center gap-2 px-4 py-2 rounded-xl font-bold transition-all",
+                      "flex items-center justify-center gap-2 px-4 py-2 rounded-xl font-bold transition-all w-full sm:w-auto",
                       isSpeaking ? "bg-rose-500/20 text-rose-400" : "bg-indigo-500/20 text-indigo-400"
                     )}
                   >
@@ -460,7 +460,7 @@ export default function AITutor() {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 20 }}
-              className="bg-black/40 backdrop-blur-3xl p-6 rounded-3xl shadow-2xl border border-white/10 h-fit sticky top-24 text-white"
+              className="bg-black/40 backdrop-blur-3xl p-6 rounded-3xl shadow-2xl border border-white/10 h-fit lg:sticky lg:top-24 text-white"
             >
               <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
                 <History className="text-indigo-500" />

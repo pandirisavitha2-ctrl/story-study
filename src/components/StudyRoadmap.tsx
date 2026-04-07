@@ -105,7 +105,7 @@ export default function StudyRoadmap() {
         )}
       </header>
 
-      <div className="bg-black/40 backdrop-blur-3xl p-8 rounded-[2.5rem] shadow-2xl border border-white/10 overflow-hidden relative text-white">
+      <div className="bg-black/40 backdrop-blur-3xl p-4 sm:p-8 rounded-[2.5rem] shadow-2xl border border-white/10 overflow-hidden relative text-white">
         <AnimatePresence mode="wait">
           {showHistory ? (
             <motion.div

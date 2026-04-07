@@ -230,7 +230,7 @@ export default function QuizSession() {
         </button>
       </header>
 
-      <div className="bg-black/40 backdrop-blur-3xl p-8 rounded-[3rem] shadow-2xl border border-white/10 min-h-[400px] flex flex-col relative overflow-hidden text-white">
+      <div className="bg-black/40 backdrop-blur-3xl p-4 sm:p-8 rounded-[3rem] shadow-2xl border border-white/10 min-h-[400px] flex flex-col relative overflow-hidden text-white">
         <AnimatePresence mode="wait">
           {showHistory ? (
             <motion.div

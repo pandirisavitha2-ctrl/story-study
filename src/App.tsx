@@ -161,7 +161,7 @@ export default function App() {
           </AnimatePresence>
 
           {/* Main Content */}
-          <main className="lg:ml-72 p-6 lg:p-12 max-w-7xl mx-auto">
+          <main className="lg:ml-72 p-4 sm:p-6 lg:p-12 max-w-7xl mx-auto">
             <AnimatePresence mode="wait">
               <motion.div
                 key={currentView}
