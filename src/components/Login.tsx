@@ -16,11 +16,11 @@ export default function Login({ onLogin }: LoginProps) {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6 bg-gradient-to-br from-indigo-50 via-white to-rose-50">
+    <div className="min-h-screen flex items-center justify-center p-6">
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="w-full max-w-md bg-white p-10 rounded-[3rem] shadow-2xl border-8 border-white relative overflow-hidden"
+        className="w-full max-w-md bg-white/90 backdrop-blur-3xl p-10 rounded-[3rem] shadow-2xl border border-white/20 relative overflow-hidden text-gray-900"
       >
         <div className="absolute top-0 right-0 p-8 opacity-10">
           <Sparkles className="w-32 h-32 text-indigo-500" />

@@ -1,7 +1,8 @@
 {
-  "name": "StoryStudy AI",
+  "name": "Unit Ratio",
   "description": "A vibrant AI-powered personal tutor and study planner that turns textbook chapters into engaging stories.",
   "requestFramePermissions": [
-    "camera"
+    "camera",
+    "microphone"
   ]
 }
